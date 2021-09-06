@@ -20,35 +20,35 @@ import (
 // Metrics 定义，Bu, project, App 需要上传
 // Routine，Nid，PushGateway 不传按默认
 type Metrics struct {
-	Registry    prometheus.Registry  `json:"registry"`
-	Collector   prometheus.Collector `json:"collector"`
+	Registry    *prometheus.Registry  `json:"registry"`
+	Collector   prometheus.Collector  `json:"collector"`
 
-	Bu          string              `json:"bu"`
-	Project     string              `json:"project"`
-	App         string              `json:"app"`
+	Bu          string                `json:"bu"`
+	Project     string                `json:"project"`
+	App         string                `json:"app"`
 
-	Routine     time.Time           `json:"routine,omitempty"`
-	Nid         string              `json:"nid,omitempty"`
-	PushGateway string              `json:"pushgateway,omitempty"`
-	GlobalTags  []string            `json:"globaltags,omitempty"`
+	Routine     time.Time             `json:"routine,omitempty"`
+	Nid         string                `json:"nid,omitempty"`
+	PushGateway string                `json:"pushgateway,omitempty"`
+	GlobalTags  []string              `json:"globaltags,omitempty"`
 }
 
 type N9EMetrics struct {
-	Metric      string              `json:"metric"`
-	Endpoint    string              `json:"endpoint,omitempty"`
-	Timestamp   int64               `json:"timestamp,omitempty"`
-	Step        int64               `json:"step"`
-	Value       float64             `json:"value"`
-	CounterType Countertype         `json:"counterType"`
-	Tags        interface{}         `json:"tags,omitempty"`
-	TagsMap     map[string]string   `json:"tagsMap,omitempty"`
-	Extra       string              `json:"extra,omitempty"`
+	Metric      string                `json:"metric"`
+	Nid         string                `json:"nid"`
+	Endpoint    string                `json:"endpoint,omitempty"`
+	Timestamp   int64                 `json:"timestamp,omitempty"`
+	Step        int64                 `json:"step"`
+	Value       float64               `json:"value"`
+	N9EDesc     *prometheus.Desc      `json:"n9edesc"`
+	Tags        interface{}           `json:"tags,omitempty"`
+	TagsMap     map[string]string     `json:"tagsMap,omitempty"`
+	Extra       string                `json:"extra,omitempty"`
 }
 
 type Countertype struct {
 	Gauge         prometheus.Gauge
 	Counter       prometheus.Counter
-	// Subtract      prometheus.Gauge
 	Histogram     prometheus.Histogram
 	Summary       prometheus.Summary
 	GaugeOpts     prometheus.GaugeOpts
@@ -58,62 +58,14 @@ type Countertype struct {
 }
 
 type DefaultMode struct {
-	IsFailureCodes      bool                    `json:"isfailurecodes"`
-	UserDuration        prometheus.HistogramVec `json:"userduration"`
-	UserRequest         prometheus.CounterVec   `json:"userrequest"`
-	UserFails           prometheus.CounterVec   `json:"userfails"`
-	ReturnCode          prometheus.CounterVec   `json:"returncode,omitempty"`
-	Codes               map[string]string       `json:"codes,omitempty"`
-}
-
-func NewRequest() *prometheus.CounterVec {
-	userRequestSuccess = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Subsystem: subsystem,
-			Name: "_user_requests_total",
-			Help: "Number of success requests",
-		},
-		[]string{},
-	)
-	return userRequestSuccess
-}
-
-func NewFails() *prometheus.CounterVec {
-	userRequestFails = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Subsystem: subsystem,
-			Name: "_user_fails_total",
-			Help: "Number of fails requests",
-		},
-		[]string{},
-	)
-	return userRequestFails
-}
-
-func NewDuration() *prometheus.HistogramVec {
-	userDuration = prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
-			Subsystem: subsystem,
-			Name: "_user_request_duration",
-			Help: "Duration of request",
-		},
-		[]string{},
-	)
-	return userDuration
-}
-
-func NewRetCode() *prometheus.CounterVec {
-	returnCode = prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Subsystem: subsystem,
-			Name: "_return_code",
-			Help: "return code",
-		},
-		[]string{"code"},
-	)
-	return returnCode
-}
-
-func NewDefaultMode() {
-
+	IsFailureCodes         bool                     `json:"isfailurecodes"`
+	UserDuration           prometheus.Histogram     `json:"userduration,omitempty"`
+	UserDurationVec        *prometheus.HistogramVec `json:"userdurationvec,omitempty"`
+	UserRequest            prometheus.Counter       `json:"userrequest,omitempty"`
+	UserRequestVec         *prometheus.CounterVec   `json:"userrequestvec,omitempty"`
+	UserFails              prometheus.Counter       `json:"userfails,omitempty"`
+	UserFailsVec           *prometheus.CounterVec   `json:"userfailsvec,omitempty"`
+	ReturnCode             prometheus.Counter       `json:"returncode,omitempty"`
+	ReturnCodeVec          *prometheus.CounterVec   `json:"returncodevec,omitempty"`
+	Codes                  map[string]string        `json:"codes,omitempty"`
 }
